@@ -165,16 +165,21 @@ local function LoadSkin()
 
 	BankPanel.MoneyFrame.Border:Hide()
 
-	BankPanel.AutoDepositFrame.DepositButton:SkinButton()
+	if BankPanel.AutoDepositFrame then -- Not exist in WoW Forever
+		BankPanel.AutoDepositFrame.DepositButton:SkinButton()
+		T.SkinCheckBox(BankPanel.AutoDepositFrame.IncludeReagentsCheckbox)
+	end
 	T.SkinCloseButton(BankFrameCloseButton, BankFrame.backdrop)
 
 	hooksecurefunc(BankPanel, "GenerateItemSlotsForSelectedTab", SkinItemSlots)
 
 	-- Tabs
-	for i = 1, 3 do
-		local tab = select(i, BankFrame.TabSystem:GetChildren())
-		if tab then
-			T.SkinTab(tab)
+	if BankFrame.TabSystem then -- Not exist in WoW Forever
+		for i = 1, 3 do
+			local tab = select(i, BankFrame.TabSystem:GetChildren())
+			if tab then
+				T.SkinTab(tab)
+			end
 		end
 	end
 
@@ -211,7 +216,6 @@ local function LoadSkin()
 
 	BankPanel.MoneyFrame.WithdrawButton:SkinButton()
 	BankPanel.MoneyFrame.DepositButton:SkinButton()
-	T.SkinCheckBox(BankPanel.AutoDepositFrame.IncludeReagentsCheckbox)
 
 	BankPanel.PurchasePrompt:StripTextures()
 	BankPanel.PurchasePrompt:CreateBackdrop("Overlay")

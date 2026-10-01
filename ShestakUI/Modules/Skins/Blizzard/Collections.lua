@@ -24,7 +24,11 @@ local function LoadSkin()
 	CollectionsJournal:SetTemplate("Transparent")
 	CollectionsJournalPortrait:SetAlpha(0)
 
-	if not T.Forever then -- Side tabs in WoW Forever
+	if T.Forever then -- Side tabs in WoW Forever
+		for _, tab in pairs(CollectionsJournal.TabContainer.Tabs) do
+			T.SkinFrameTab(tab)
+		end
+	else
 		for i = 1, 6 do
 			T.SkinTab(_G["CollectionsJournalTab"..i])
 		end
@@ -37,8 +41,8 @@ local function LoadSkin()
 		PetJournalFilterButton
 	}
 
-	for i = 1, #buttons do
-		buttons[i]:SkinButton()
+	for _, button in pairs(buttons) do -- Some buttons not exist in WoW Forever
+		button:SkinButton()
 	end
 
 	local filterButtons = {
@@ -256,7 +260,7 @@ local function LoadSkin()
 		local petID, _, isOwned = C_PetJournal.GetPetInfoByIndex(index)
 
 		if petID and isOwned then
-			local _, _, _, _, rarity = C_PetJournal.GetPetStats(petID)
+			local rarity = C_PetJournal.GetPetStats and select(5, C_PetJournal.GetPetStats(petID)) -- No pet stats in WoW Forever
 
 			if rarity then
 				local color = ITEM_QUALITY_COLORS[rarity-1]

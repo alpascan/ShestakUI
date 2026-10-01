@@ -1191,16 +1191,19 @@ function Stuffing:InitBank()
 		end
 
 		for _, data in pairs(self.purchasedBankTabData) do
+			local button
 			if data.ID >= FIRST_WARBAND then
-				local slot = data.ID - (FIRST_WARBAND - 1)
-				if _G["StuffingABag"..slot.."Slot"] then
-					_G["StuffingABag"..slot.."SlotIconTexture"]:SetTexture(data.icon)
-				end
+				button = _G["StuffingABag"..(data.ID - (FIRST_WARBAND - 1)).."Slot"]
 			else
-				local slot = data.ID - 5
-				if _G["StuffingBBag"..slot.."Slot"] then
-					_G["StuffingBBag"..slot.."SlotIconTexture"]:SetTexture(data.icon)
+				button = _G["StuffingBBag"..(data.ID - 5).."Slot"]
+			end
+			if button then
+				local icon = data.icon
+				if button.bagIndex then -- Bank tab is bag slot in WoW Forever, show bag icon
+					local location = ItemLocation:CreateFromBagAndSlot(button.bagIndex, button.bagID)
+					icon = C_Item.DoesItemExist(location) and C_Item.GetItemIcon(location) or 136511
 				end
+				_G[button:GetName().."IconTexture"]:SetTexture(icon)
 			end
 		end
 	end)

@@ -13,8 +13,14 @@ local function LoadSkin()
 	InspectPaperDollFrame.ViewButton:SkinButton()
 	InspectFramePortrait:SetAlpha(0)
 
-	for i = 1, 4 do
-		T.SkinTab(_G["InspectFrameTab"..i])
+	if T.Forever then -- Side tabs in WoW Forever
+		for _, tab in pairs(InspectFrame.ModeTabs.Tabs) do
+			T.SkinFrameTab(tab)
+		end
+	else
+		for i = 1, 4 do
+			T.SkinTab(_G["InspectFrameTab"..i])
+		end
 	end
 
 	InspectModelFrame:StripTextures()
@@ -49,6 +55,10 @@ local function LoadSkin()
 		"MainHandSlot",
 		"SecondaryHandSlot"
 	}
+
+	if T.Forever then
+		tinsert(slots, "RangedSlot")
+	end
 
 	for _, slot in pairs(slots) do
 		local icon = _G["Inspect"..slot.."IconTexture"]
@@ -90,7 +100,11 @@ local function LoadSkin()
 
 	InspectPVPFrame.BG:Kill()
 	InspectGuildFrameBG:Kill()
-	InspectPaperDollItemsFrame.InspectTalents:SkinButton()
+	if T.Forever then
+		InspectPaperDollFrame.InspectTalents:SkinButton()
+	else
+		InspectPaperDollItemsFrame.InspectTalents:SkinButton()
+	end
 end
 
 T.SkinFuncs["Blizzard_InspectUI"] = LoadSkin

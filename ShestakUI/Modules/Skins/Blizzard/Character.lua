@@ -444,4 +444,236 @@ local function LoadSkin()
 	end)
 end
 
-tinsert(T.SkinFuncs["ShestakUI"], LoadSkin)
+----------------------------------------------------------------------------------------
+--	Character skin for WoW Forever (side tabs, left and right panes)
+----------------------------------------------------------------------------------------
+local function LoadForeverSkin()
+	CharacterFrame:StripTextures()
+	CharacterFrame:SetTemplate("Transparent")
+	if CharacterFrame.PortraitContainer then
+		CharacterFrame.PortraitContainer:SetAlpha(0)
+	end
+	T.SkinCloseButton(CharacterFrameCloseButton)
+
+	-- Left and right pane backgrounds
+	for _, pane in pairs({CharacterFrame.LeftPaneHost, CharacterFrame.RightPaneHost}) do
+		pane:StripTextures()
+	end
+
+	-- Mode tabs on the right side of the frame
+	for _, tab in pairs(CharacterFrame.ModeTabs.Tabs) do
+		T.SkinFrameTab(tab)
+	end
+
+	-- Equipment slots
+	local slots = {
+		"HeadSlot", "NeckSlot", "ShoulderSlot", "BackSlot", "ChestSlot", "ShirtSlot", "TabardSlot", "WristSlot",
+		"HandsSlot", "WaistSlot", "LegsSlot", "FeetSlot", "Finger0Slot", "Finger1Slot", "Trinket0Slot", "Trinket1Slot",
+		"MainHandSlot", "SecondaryHandSlot", "RangedSlot", "AmmoSlot"
+	}
+
+	for _, i in pairs(slots) do
+		local slot = _G["Character"..i]
+		if slot then
+			local icon = slot.icon or _G["Character"..i.."IconTexture"]
+			if slot.BorderFrame then
+				slot.BorderFrame:Hide()
+			end
+			if slot.IconBorder then
+				slot.IconBorder:SetAlpha(0)
+			end
+			for _, region in pairs({slot:GetRegions()}) do
+				if region:IsObjectType("Texture") and region ~= icon and region:GetAtlas() then
+					region:SetAlpha(0) -- Slot background atlas
+				end
+			end
+
+			slot:StyleButton()
+			slot:SetNormalTexture(0)
+			slot.SetHighlightTexture = T.dummy
+			slot:GetHighlightTexture().SetAllPoints = T.dummy
+			slot:SetFrameLevel(slot:GetFrameLevel() + 2)
+			slot:SetTemplate("Default")
+
+			if icon then
+				icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+				icon:ClearAllPoints()
+				icon:SetPoint("TOPLEFT", 2, -2)
+				icon:SetPoint("BOTTOMRIGHT", -2, 2)
+			end
+		end
+	end
+
+	-- Model
+	CharacterModelScene:CreateBackdrop("Default")
+	CharacterModelScene.backdrop:SetPoint("TOPLEFT", -3, 4)
+	CharacterModelScene.backdrop:SetPoint("BOTTOMRIGHT", 4, 0)
+	if CharacterModelScene.BackgroundOverlay then
+		CharacterModelScene.BackgroundOverlay:SetColorTexture(0.01, 0.01, 0.01)
+	end
+	T.SkinModelControl(CharacterModelScene)
+
+	-- Item flyout (shown when holding alt over a slot)
+	EquipmentFlyoutFrameHighlight:Kill()
+	if EquipmentFlyoutFrame.NavigationFrame then
+		EquipmentFlyoutFrame.NavigationFrame:StripTextures()
+		EquipmentFlyoutFrame.NavigationFrame:SetTemplate("Transparent")
+		T.SkinNextPrevButton(EquipmentFlyoutFrame.NavigationFrame.PrevButton)
+		T.SkinNextPrevButton(EquipmentFlyoutFrame.NavigationFrame.NextButton)
+	end
+
+	local function SkinItemFlyouts()
+		EquipmentFlyoutFrameButtons:StripTextures()
+
+		for i = 1, 23 do
+			local button = _G["EquipmentFlyoutFrameButton"..i]
+			local icon = _G["EquipmentFlyoutFrameButton"..i.."IconTexture"]
+			if button and not button.backdrop then
+				button:StyleButton()
+				if button.IconBorder then
+					button.IconBorder:Hide()
+				end
+				if button:GetNormalTexture() then
+					button:GetNormalTexture():SetTexture(nil)
+				end
+				if icon then
+					icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+					icon:ClearAllPoints()
+					icon:SetPoint("TOPLEFT", 2, -2)
+					icon:SetPoint("BOTTOMRIGHT", -2, 2)
+				end
+				button:SetFrameStrata("DIALOG")
+				button:CreateBackdrop("Default")
+				button.backdrop:SetAllPoints()
+			end
+		end
+	end
+	EquipmentFlyoutFrame:HookScript("OnShow", SkinItemFlyouts)
+	hooksecurefunc("EquipmentFlyout_Show", SkinItemFlyouts)
+
+	-- Scroll bars
+	local scrollbars = {
+		PaperDollFrame.TitleManagerPane.ScrollBar,
+		PaperDollFrame.EquipmentManagerPane.ScrollBar,
+		CharacterStatsPaneScrollBox.ScrollBar,
+		CharacterStatsPanePetScrollBox.ScrollBar,
+		ReputationFrame.ScrollBar,
+		SkillsFrame.ScrollBar,
+		TokenFrame.ScrollBar,
+		CurrencyTransferLog.ScrollBar
+	}
+
+	for i = 1, #scrollbars do
+		T.SkinScrollBar(scrollbars[i])
+	end
+
+	-- Stats
+	CharacterStatsPane.ItemLevelFrame.Value:SetFont(C.media.normal_font, 18, "")
+	CharacterStatsPane.ItemLevelFrame.Value:SetShadowOffset(1, -1)
+	CharacterStatsPane.ItemLevelFrame.Background:Hide()
+
+	-- Equipment manager
+	PaperDollFrameEquipSet:SkinButton()
+	PaperDollFrameSaveSet:SkinButton()
+	T.SkinIconSelectionFrame(GearManagerPopupFrame)
+
+	-- Buttons used to toggle between equipment manager, titles, and character stats
+	local function FixSidebarTabs()
+		for i = 1, #PAPERDOLL_SIDEBARS do
+			local tab = _G["PaperDollSidebarTab"..i]
+			if tab and not tab.backdrop then
+				for _, region in pairs({tab:GetRegions()}) do
+					if region:IsObjectType("Texture") and region ~= tab.Icon then
+						region:SetAlpha(0)
+					end
+				end
+				tab.Icon:SetTexCoord(0.16, 0.86, 0.16, 0.86)
+				tab.Icon:SetInside()
+				tab:GetCheckedTexture():SetColorTexture(1, 0.82, 0, 0.3)
+				tab:GetCheckedTexture():SetInside()
+				tab:CreateBackdrop("Default")
+				tab.backdrop:SetAllPoints()
+			end
+		end
+	end
+	hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", FixSidebarTabs)
+
+	-- Side panes of reputation, skills and currency
+	local sidePanes = {
+		ReputationFrame.ReputationDetailFrame,
+		SkillsFrame.SkillDetailFrame,
+		TokenFrame.DetailFrame
+	}
+
+	for i = 1, #sidePanes do
+		local pane = sidePanes[i]
+		if pane and pane.DescriptionScrollBar then
+			T.SkinScrollBar(pane.DescriptionScrollBar)
+		end
+	end
+
+	local detail = ReputationFrame.ReputationDetailFrame
+	T.SkinCheckBox(detail.WatchFactionCheckbox)
+	T.SkinCheckBox(detail.MakeInactiveCheckbox)
+	T.SkinCheckBox(detail.AtWarCheckbox)
+	detail.ViewRenownButton:SkinButton()
+	T.SkinDropDownBox(ReputationFrame.filterDropdown)
+
+	T.SkinCheckBox(TokenFrame.DetailFrame.InactiveCheckbox)
+	T.SkinCheckBox(TokenFrame.DetailFrame.BackpackCheckbox)
+	TokenFrame.DetailFrame.CurrencyTransferToggleButton:SkinButton()
+
+	T.SkinFrame(CurrencyTransferLog)
+
+	local currencyTransfer = CurrencyTransferMenu
+	currencyTransfer:StripTextures()
+	currencyTransfer:SetTemplate("Transparent")
+	T.SkinCloseButton(currencyTransfer.CloseButton)
+
+	local updateToggleCollapse = function(button)
+		if button:GetHeader():IsCollapsed() then
+			button.bg.plus:Show()
+		else
+			button.bg.plus:Hide()
+		end
+	end
+
+	-- Status bars and collapse buttons in reputation, skills and currency lists
+	local function SkinListRows(box)
+		for _, child in next, {box.ScrollTarget:GetChildren()} do
+			if not child.IsSkinned then
+				local content = child.Content
+				local bar = content and (content.ReputationBar or content.SkillsBar)
+				if bar then
+					bar:StripTextures()
+					bar:SetStatusBarTexture(C.media.texture)
+					bar:CreateBackdrop("Overlay")
+				end
+
+				local icon = content and content.CurrencyIcon
+				if icon then
+					icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+				end
+
+				local toggle = child.ToggleCollapseButton
+				if toggle and toggle.GetHeader then
+					toggle:GetNormalTexture():SetAlpha(0)
+					if toggle:GetPushedTexture() then
+						toggle:GetPushedTexture():SetAlpha(0)
+					end
+					T.SkinExpandOrCollapse(toggle)
+					updateToggleCollapse(toggle)
+					hooksecurefunc(toggle, "RefreshIcon", updateToggleCollapse)
+				end
+
+				child.IsSkinned = true
+			end
+		end
+	end
+
+	hooksecurefunc(ReputationFrame.ScrollBox, "Update", SkinListRows)
+	hooksecurefunc(SkillsFrame.ScrollBox, "Update", SkinListRows)
+	hooksecurefunc(TokenFrame.ScrollBox, "Update", SkinListRows)
+end
+
+tinsert(T.SkinFuncs["ShestakUI"], T.Forever and LoadForeverSkin or LoadSkin)
