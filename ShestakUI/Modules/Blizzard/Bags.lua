@@ -11,6 +11,28 @@ local BAGS_BANK_2 = {9, 10, 11}
 local BAGS_WARBAND = {12, 13, 14, 15, 16}
 local BAGS_WARBAND_1 = {12, 13, 14}
 local BAGS_WARBAND_2 = {15, 16}
+local SORT_BANK_1 = {8, 7, 6}
+local SORT_BANK_2 = {11, 10, 9}
+local SORT_WARBAND_1 = {14, 13, 12}
+local SORT_WARBAND_2 = {16, 15}
+local FIRST_WARBAND = 12	-- ID of first warband tab
+
+-- Bank tabs are bag slots in WoW Forever (9 for character, 9 for account), show all on one page
+if T.Forever then
+	BAGS_BANK, BAGS_WARBAND, SORT_BANK_1, SORT_WARBAND_1 = {}, {}, {}, {}
+	FIRST_WARBAND = Enum.BagIndex.AccountBankTab_1
+	for i = Enum.BagIndex.CharacterBankTab_1, FIRST_WARBAND - 1 do
+		tinsert(BAGS_BANK, i)
+		tinsert(SORT_BANK_1, 1, i)
+	end
+	for i = FIRST_WARBAND, FIRST_WARBAND + Constants.InventoryConstants.NumAccountBankSlots - 1 do
+		tinsert(BAGS_WARBAND, i)
+		tinsert(SORT_WARBAND_1, 1, i)
+	end
+	BAGS_BANK_1, BAGS_BANK_2 = BAGS_BANK, {}
+	BAGS_WARBAND_1, BAGS_WARBAND_2 = BAGS_WARBAND, {}
+	SORT_BANK_2, SORT_WARBAND_2 = {}, {}
+end
 local ST_NORMAL = 1
 local ST_FISHBAG = 2
 local ST_SPECIAL = 3
@@ -430,8 +452,8 @@ function Stuffing:BagFrameSlotNew(p, slot)
 	-- Bank and Account
 	if slot > 5 then
 		ret.slot = slot
-		local name = slot >= 12 and "StuffingABag" or "StuffingBBag"
-		slot = slot >= 12 and slot - 11 or slot - 5
+		local name = slot >= FIRST_WARBAND and "StuffingABag" or "StuffingBBag"
+		slot = slot >= FIRST_WARBAND and slot - (FIRST_WARBAND - 1) or slot - 5
 		ret.frame = CreateFrame("ItemButton", name..slot.."Slot", p, "")
 		Mixin(ret.frame, BackdropTemplateMixin)
 
@@ -440,7 +462,28 @@ function Stuffing:BagFrameSlotNew(p, slot)
 
 		_G[ret.frame:GetName().."IconTexture"]:SetTexture(136511)
 
+		-- Bank tab is bag slot in WoW Forever (first one is bank itself)
+		if T.Forever and slot > 1 then
+			ret.frame.bagIndex = ret.slot >= FIRST_WARBAND and Enum.BagIndex.Accountbanktab or Enum.BagIndex.Characterbanktab
+			ret.frame:RegisterForDrag("LeftButton")
+			ret.frame:SetScript("OnDragStart", function(self)
+				C_Container.PickupContainerItem(self.bagIndex, self.bagID)
+			end)
+			ret.frame:SetScript("OnReceiveDrag", function(self)
+				C_Container.PickupContainerItem(self.bagIndex, self.bagID)
+			end)
+		end
+
 		local tooltip_show = function(self)
+			if self.bagIndex then
+				GameTooltip:SetOwner(self, "ANCHOR_LEFT", 19, 7)
+				if not GameTooltip:SetBagItem(self.bagIndex, self.bagID) then
+					GameTooltip:SetText(BANK_BAG)
+				end
+				GameTooltip:Show()
+				return
+			end
+
 			if not BankFrame.BankPanel.purchasedBankTabData then return end
 			local data = BankFrame.BankPanel.purchasedBankTabData[self.bagID]
 			if not data then return end
@@ -449,7 +492,9 @@ function Stuffing:BagFrameSlotNew(p, slot)
 			GameTooltip:ClearLines()
 			GameTooltip_SetTitle(GameTooltip, data.name, NORMAL_FONT_COLOR)
 			AddBankTabSettingsToTooltip(GameTooltip, data.depositFlags)
-			GameTooltip_AddInstructionLine(GameTooltip, BANK_TAB_TOOLTIP_CLICK_INSTRUCTION)
+			if not T.Forever then
+				GameTooltip_AddInstructionLine(GameTooltip, BANK_TAB_TOOLTIP_CLICK_INSTRUCTION)
+			end
 			GameTooltip:Show()
 		end
 
@@ -973,6 +1018,10 @@ function Stuffing:CreateBagFrame(w)
 				f.tab.text:SetText("2")
 			end
 
+			if T.Forever then
+				f.tab:Hide() -- All bank bags on one page in WoW Forever
+			end
+
 			f.tab:RegisterForClicks("AnyUp")
 			f.tab:SetScript("OnClick", function()
 				if i == 1 then
@@ -1142,8 +1191,8 @@ function Stuffing:InitBank()
 		end
 
 		for _, data in pairs(self.purchasedBankTabData) do
-			if data.ID >= 12 then
-				local slot = data.ID - 11
+			if data.ID >= FIRST_WARBAND then
+				local slot = data.ID - (FIRST_WARBAND - 1)
 				if _G["StuffingABag"..slot.."Slot"] then
 					_G["StuffingABag"..slot.."SlotIconTexture"]:SetTexture(data.icon)
 				end
@@ -1295,6 +1344,13 @@ function Stuffing:InitBags()
 end
 
 local function TabOnClick(self, btn)
+	if T.Forever then -- Bank tabs are bag slots in WoW Forever, no tab settings
+		if self.bagIndex then
+			C_Container.PickupContainerItem(self.bagIndex, self.bagID)
+		end
+		return
+	end
+
 	if not BankFrame.BankPanel.purchasedBankTabData then return end
 
 	local data = BankFrame.BankPanel.purchasedBankTabData[self.bagID]
@@ -1595,15 +1651,15 @@ function Stuffing:SortBags()
 	local bagList
 	if Stuffing.warbandFrame and Stuffing.warbandFrame:IsShown() then
 		if self.frame.warband_first then
-			bagList = {14, 13, 12}
+			bagList = SORT_WARBAND_1
 		else
-			bagList = {16, 15}
+			bagList = SORT_WARBAND_2
 		end
 	elseif Stuffing.bankFrame and Stuffing.bankFrame:IsShown() then
 		if self.frame.bank_first then
-			bagList = {8, 7, 6}
+			bagList = SORT_BANK_1
 		else
-			bagList = {11, 10, 9}
+			bagList = SORT_BANK_2
 		end
 	else
 		bagList = {4, 3, 2, 1, 0}

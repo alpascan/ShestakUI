@@ -12,8 +12,9 @@ T.realm = GetRealmName()
 T.color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[T.class]
 T.version = C_AddOns.GetAddOnMetadata("ShestakUI", "Version")
 T.screenWidth, T.screenHeight = GetPhysicalScreenSize()
-T.newPatch = select(4, GetBuildInfo()) >= 120105
-T.Midnight = select(4, GetBuildInfo()) >= 120000
+T.Forever = C_GameRules.GetForeverExperiencePreset ~= nil -- WoW Forever (1.60.x): mainline 12.x engine, classic frame set
+T.newPatch = T.Forever or select(4, GetBuildInfo()) >= 120105
+T.Midnight = T.Forever or select(4, GetBuildInfo()) >= 120000
 
 -- NOTE: Restore old function
 GetContainerItemInfo = function(bagIndex, slotIndex)

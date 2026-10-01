@@ -5,6 +5,8 @@ if C.skins.blizzard_frames ~= true then return end
 --	PetStable skin
 ----------------------------------------------------------------------------------------
 local function LoadSkin()
+	if not StableFrame then return end -- Not exist in WoW Forever (classic PetStableFrame instead)
+
 	local frame = StableFrame
 	T.SkinFrame(frame)
 

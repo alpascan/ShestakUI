@@ -114,10 +114,13 @@ function oUF:DisableBlizzard(unit)
 		if(not isArenaHooked) then
 			isArenaHooked = true
 
-			handleFrame(CompactArenaFrame)
+			-- CompactArenaFrame is not loaded in WoW Forever
+			if(CompactArenaFrame) then
+				handleFrame(CompactArenaFrame)
 
-			for _, frame in next, CompactArenaFrame.memberUnitFrames do
-				handleFrame(frame)
+				for _, frame in next, CompactArenaFrame.memberUnitFrames do
+					handleFrame(frame)
+				end
 			end
 
 			-- old arena frames, they're still used for flag carriers etc in battlegrounds

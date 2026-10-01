@@ -8,7 +8,9 @@ local function LoadSkin()
 	local frame = ProfessionsFrame
 	T.SkinFrame(frame)
 
-	T.SkinMaxMinFrame(frame.MaximizeMinimize, frame.CloseButton)
+	if frame.MaximizeMinimize then -- Not exist in WoW Forever
+		T.SkinMaxMinFrame(frame.MaximizeMinimize, frame.CloseButton)
+	end
 	T.SkinEditBox(frame.CraftingPage.MinimizedSearchBox, nil, 16)
 
 	ProfessionsFrame.CraftingPage.TutorialButton.Ring:Hide()
@@ -42,12 +44,14 @@ local function LoadSkin()
 	end
 
 	local LinkButton = frame.CraftingPage.LinkButton
-	LinkButton:GetNormalTexture():SetTexCoord(0.25, 0.7, 0.37, 0.75)
-	LinkButton:GetPushedTexture():SetTexCoord(0.25, 0.7, 0.45, 0.8)
-	LinkButton:GetHighlightTexture():Kill()
-	LinkButton:CreateBackdrop("Overlay")
-	LinkButton:SetSize(17, 14)
-	LinkButton:SetPoint("LEFT", ProfessionsFrame.CraftingPage.RankBar, "RIGHT", 1, -3)
+	if LinkButton:GetNormalTexture() then -- No button textures in WoW Forever (atlas Icon and Background instead)
+		LinkButton:GetNormalTexture():SetTexCoord(0.25, 0.7, 0.37, 0.75)
+		LinkButton:GetPushedTexture():SetTexCoord(0.25, 0.7, 0.45, 0.8)
+		LinkButton:GetHighlightTexture():Kill()
+		LinkButton:CreateBackdrop("Overlay")
+		LinkButton:SetSize(17, 14)
+		LinkButton:SetPoint("LEFT", ProfessionsFrame.CraftingPage.RankBar, "RIGHT", 1, -3)
+	end
 
 	for _, name in pairs({"Prof0ToolSlot", "Prof0Gear0Slot", "Prof0Gear1Slot", "Prof1ToolSlot", "Prof1Gear0Slot", "Prof1Gear1Slot", "CookingToolSlot", "CookingGear0Slot", "FishingToolSlot", "FishingGear0Slot", "FishingGear1Slot"}) do
 		local button = frame.CraftingPage[name]
@@ -198,8 +202,10 @@ local function LoadSkin()
 	ProfessionsFrame.CraftingPage.CreateMultipleInputBox.IncrementButton:SetSize(22, 22)
 	ProfessionsFrame.CraftingPage.CreateMultipleInputBox.DecrementButton:SetSize(22, 22)
 
-	for _, tab in next, {frame.TabSystem:GetChildren()} do
-		T.SkinTab(tab)
+	if frame.TabSystem then -- Not exist in WoW Forever
+		for _, tab in next, {frame.TabSystem:GetChildren()} do
+			T.SkinTab(tab)
+		end
 	end
 
 	local function HandleOutputButtons(frame)
@@ -261,6 +267,9 @@ local function LoadSkin()
 	GuildFrame:CreateBackdrop("Transparent")
 	GuildFrame.Container:StripTextures()
 	GuildFrame.Container:CreateBackdrop("Overlay")
+
+	-- Spec and Orders pages not exist in WoW Forever
+	if not frame.SpecPage then return end
 
 	-- Spec page
 	local specPage = frame.SpecPage

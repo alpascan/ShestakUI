@@ -39,8 +39,13 @@ local function LoadSkin()
 	end
 
 	T.SkinCloseButton(MailFrameCloseButton, MailFrame.backdrop)
-	T.SkinNextPrevButton(InboxPrevPageButton)
-	T.SkinNextPrevButton(InboxNextPageButton)
+	if InboxPrevPageButton then
+		T.SkinNextPrevButton(InboxPrevPageButton)
+		T.SkinNextPrevButton(InboxNextPageButton)
+	else -- Have no global names in WoW Forever
+		T.SkinNextPrevButton(InboxFrame.PrevPageButton, true)
+		T.SkinNextPrevButton(InboxFrame.NextPageButton)
+	end
 
 	T.SkinTab(MailFrameTab1)
 	T.SkinTab(MailFrameTab2)

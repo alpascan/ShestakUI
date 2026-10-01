@@ -52,7 +52,8 @@ local function LoadSecondarySkin()
 	ScriptErrorsFrame:StripTextures()
 	ScriptErrorsFrame:SetTemplate("Transparent")
 	ScriptErrorsFrame.Reload:SkinButton()
-	ScriptErrorsFrame.Close:SkinButton()
+	local closeButton = ScriptErrorsFrame.CloseButton or ScriptErrorsFrame.Close -- Renamed in WoW Forever
+	closeButton:SkinButton()
 
 	T.SkinNextPrevButton(ScriptErrorsFrame.PreviousError, true)
 	T.SkinNextPrevButton(ScriptErrorsFrame.NextError)

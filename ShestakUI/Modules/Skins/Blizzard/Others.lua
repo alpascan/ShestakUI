@@ -18,7 +18,9 @@ SkinBlizzUI:SetScript("OnEvent", function(_, _, addon)
 		}
 
 		for _, object in pairs(checkButtons) do
-			T.SkinCheckBox(_G[object].checkButton)
+			if _G[object] then -- LFD frames not exist in WoW Forever
+				T.SkinCheckBox(_G[object].checkButton)
+			end
 		end
 
 		-- Blizzard Frame reskin
@@ -38,7 +40,9 @@ SkinBlizzUI:SetScript("OnEvent", function(_, _, addon)
 
 		QueueStatusFrame:StripTextures()
 		GameMenuFrame:StripTextures()
-		LFDRoleCheckPopup:StripTextures()
+		if LFDRoleCheckPopup then
+			LFDRoleCheckPopup:StripTextures()
+		end
 		RolePollPopup:StripTextures()
 		OpacityFrame:StripTextures()
 		ColorPickerFrame.Border:Hide()

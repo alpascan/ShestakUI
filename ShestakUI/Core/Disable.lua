@@ -73,6 +73,10 @@ if C_AddOns.IsAddOnLoaded("Gladius") or C_AddOns.IsAddOnLoaded("GladiusEx") then
 	C.unitframe.show_arena = false
 end
 
+if T.Forever then
+	C.unitframe.show_arena = false -- No arenas in WoW Forever
+end
+
 if C_AddOns.IsAddOnLoaded("Omen") or C_AddOns.IsAddOnLoaded("rThreat") then
 	C.threat.enable = false
 end

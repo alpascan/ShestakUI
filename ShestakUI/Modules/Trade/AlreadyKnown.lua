@@ -71,7 +71,11 @@ local function OpenMailFrame_UpdateButtonPositions()
 		end
 	end
 end
-hooksecurefunc("OpenMailFrame_UpdateButtonPositions", OpenMailFrame_UpdateButtonPositions)
+if _G.OpenMailFrame_UpdateButtonPositions then
+	hooksecurefunc("OpenMailFrame_UpdateButtonPositions", OpenMailFrame_UpdateButtonPositions)
+else -- Moved to frame method in WoW Forever
+	hooksecurefunc(OpenMailFrame, "UpdateButtonPositions", OpenMailFrame_UpdateButtonPositions)
+end
 
 -- Loot frame
 local function LootFrame_UpdateButton(self)

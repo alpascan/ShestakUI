@@ -12,7 +12,9 @@ LoadTootlipSkin:SetScript("OnEvent", function(self, _, addon)
 	end
 	if addon == "Blizzard_Collections" then
 		local tt = PetJournalPrimaryAbilityTooltip
-		tt.NineSlice:SetTemplate("Transparent")
+		if tt then -- Not exist in WoW Forever
+			tt.NineSlice:SetTemplate("Transparent")
+		end
 	end
 end)
 
@@ -22,8 +24,10 @@ local function LoadSkin()
 	CollectionsJournal:SetTemplate("Transparent")
 	CollectionsJournalPortrait:SetAlpha(0)
 
-	for i = 1, 6 do
-		T.SkinTab(_G["CollectionsJournalTab"..i])
+	if not T.Forever then -- Side tabs in WoW Forever
+		for i = 1, 6 do
+			T.SkinTab(_G["CollectionsJournalTab"..i])
+		end
 	end
 
 	local buttons = {
@@ -173,23 +177,29 @@ local function LoadSkin()
 	end
 
 	-- PetJournal
+	local battlePets = PetJournal.Loadout ~= nil -- Classic pet journal without battle pets in WoW Forever
+
 	PetJournal.LeftInset:StripTextures()
 	PetJournal.RightInset:StripTextures()
-	PetJournal.PetCardInset:StripTextures()
-	PetJournal.loadoutBorder:StripTextures()
-	PetJournalPetCardBG:Hide()
-	PetJournalAchievementStatus:DisableDrawLayer("BACKGROUND")
+	if battlePets then
+		PetJournal.PetCardInset:StripTextures()
+		PetJournal.loadoutBorder:StripTextures()
+		PetJournalPetCardBG:Hide()
+		PetJournalAchievementStatus:DisableDrawLayer("BACKGROUND")
 
-	PetJournalTutorialButton.Ring:Hide()
-	PetJournalTutorialButton:SetPoint("TOPLEFT", PetJournal, "TOPLEFT", -5, 10)
+		PetJournalTutorialButton.Ring:Hide()
+		PetJournalTutorialButton:SetPoint("TOPLEFT", PetJournal, "TOPLEFT", -5, 10)
+	end
 
 	PetJournal.PetCount:StripTextures()
 	T.SkinEditBox(PetJournalSearchBox, nil, 18)
 
 	PetJournal.FilterDropdown:SetPoint("TOPLEFT", PetJournalSearchBox, "TOPRIGHT", 5, 2)
 
-	PetJournalLoadoutBorderSlotHeaderText:SetParent(PetJournal)
-	PetJournalLoadoutBorderSlotHeaderText:SetPoint("CENTER", PetJournalLoadoutBorderTop, "TOP", 0, 4)
+	if battlePets then
+		PetJournalLoadoutBorderSlotHeaderText:SetParent(PetJournal)
+		PetJournalLoadoutBorderSlotHeaderText:SetPoint("CENTER", PetJournalLoadoutBorderTop, "TOP", 0, 4)
+	end
 
 	T.SkinScrollBar(PetJournal.ScrollBar)
 
@@ -213,7 +223,9 @@ local function LoadSkin()
 				button.dragButton.ActiveTexture:SetPoint("TOPLEFT", 1, -1)
 				button.dragButton.ActiveTexture:SetPoint("BOTTOMRIGHT", -1, 1)
 				button.dragButton.favorite:SetParent(button.dragButton.backdrop)
-				button.dragButton.levelBG:SetAlpha(0)
+				if battlePets then
+					button.dragButton.levelBG:SetAlpha(0)
+				end
 
 				button.petTypeIcon:SetParent(button.backdrop)
 				button.petTypeIcon:SetDrawLayer("OVERLAY")
@@ -221,9 +233,11 @@ local function LoadSkin()
 
 				name:SetParent(button.backdrop)
 
-				button.dragButton.level:SetParent(button.dragButton.backdrop)
-				button.dragButton.level:SetFontObject("SystemFont_Outline_Small")
-				button.dragButton.level:SetDrawLayer("OVERLAY")
+				if battlePets then
+					button.dragButton.level:SetParent(button.dragButton.backdrop)
+					button.dragButton.level:SetFontObject("SystemFont_Outline_Small")
+					button.dragButton.level:SetDrawLayer("OVERLAY")
+				end
 
 				button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 				button.icon:SetDrawLayer("ARTWORK")
@@ -267,11 +281,14 @@ local function LoadSkin()
 
 	hooksecurefunc("PetJournal_InitPetButton", ColorSelectedPet)
 
-	StyleItemButton(PetJournal.HealPetSpellFrame.Button)
+	if battlePets then
+		StyleItemButton(PetJournal.HealPetSpellFrame.Button)
+	end
 	StyleItemButton(PetJournal.SummonRandomPetSpellFrame.Button)
 
 	for i = 1, 3 do
 		local button = _G["PetJournalLoadoutPet"..i]
+		if not button then break end -- Not exist in WoW Forever
 
 		button:CreateBackdrop("Overlay")
 		button.backdrop:SetPoint("TOPLEFT", -2, 0)
@@ -334,12 +351,15 @@ local function LoadSkin()
 		button.xpBar:SetFrameLevel(button.xpBar:GetFrameLevel() + 2)
 	end
 
-	PetJournal.SpellSelect.BgEnd:Hide()
-	PetJournal.SpellSelect.BgTiled:Hide()
+	if battlePets then
+		PetJournal.SpellSelect.BgEnd:Hide()
+		PetJournal.SpellSelect.BgTiled:Hide()
+	end
 
 	for i = 1, 2 do
 		local button = _G["PetJournalSpellSelectSpell"..i]
 		local icon = _G["PetJournalSpellSelectSpell"..i.."Icon"]
+		if not button then break end -- Not exist in WoW Forever
 
 		button:StyleButton()
 		button:SetTemplate("Default")
@@ -355,6 +375,7 @@ local function LoadSkin()
 
 	for i = 1, 6 do
 		local button = _G["PetJournalPetCardSpell"..i]
+		if not button then break end -- Not exist in WoW Forever
 
 		button:StyleButton()
 		button:SetTemplate("Default")
@@ -365,9 +386,11 @@ local function LoadSkin()
 		button.icon:SetPoint("BOTTOMRIGHT", -2, 2)
 	end
 
-	PetJournalPetCard.AbilitiesBG1:SetAlpha(0)
-	PetJournalPetCard.AbilitiesBG2:SetAlpha(0)
-	PetJournalPetCard.AbilitiesBG3:SetAlpha(0)
+	if battlePets then
+		PetJournalPetCard.AbilitiesBG1:SetAlpha(0)
+		PetJournalPetCard.AbilitiesBG2:SetAlpha(0)
+		PetJournalPetCard.AbilitiesBG3:SetAlpha(0)
+	end
 
 	PetJournalPetCard:CreateBackdrop("Overlay")
 	PetJournalPetCard.backdrop:SetPoint("TOPLEFT", 0, -2)
@@ -380,34 +403,38 @@ local function LoadSkin()
 
 	PetJournalPetCardPetInfoIcon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 
-	PetJournalPetCardPetInfoLevelBubble:SetTexture(nil)
-	PetJournalPetCardPetInfoLevel:SetFontObject("SystemFont_Outline_Small")
+	if battlePets then
+		PetJournalPetCardPetInfoLevelBubble:SetTexture(nil)
+		PetJournalPetCardPetInfoLevel:SetFontObject("SystemFont_Outline_Small")
 
-	PetJournalPetCardPetInfoQualityBorder:SetTexture(nil)
+		PetJournalPetCardPetInfoQualityBorder:SetTexture(nil)
 
-	PetJournalPetCardHealthFrame.healthBar:StripTextures()
-	PetJournalPetCardHealthFrame.healthBar:CreateBackdrop("Overlay")
-	PetJournalPetCardHealthFrame.healthBar:SetStatusBarTexture(C.media.texture)
+		PetJournalPetCardHealthFrame.healthBar:StripTextures()
+		PetJournalPetCardHealthFrame.healthBar:CreateBackdrop("Overlay")
+		PetJournalPetCardHealthFrame.healthBar:SetStatusBarTexture(C.media.texture)
 
-	PetJournalPetCardXPBar:StripTextures()
-	PetJournalPetCardXPBar:CreateBackdrop("Overlay")
-	PetJournalPetCardXPBar:SetStatusBarTexture(C.media.texture)
-	PetJournalPetCardXPBar:SetPoint("BOTTOM", PetJournalPetCard.backdrop, "BOTTOM", 0, 6)
-	PetJournalPetCardXPBar:SetFrameLevel(PetJournalPetCardXPBar:GetFrameLevel() + 2)
+		PetJournalPetCardXPBar:StripTextures()
+		PetJournalPetCardXPBar:CreateBackdrop("Overlay")
+		PetJournalPetCardXPBar:SetStatusBarTexture(C.media.texture)
+		PetJournalPetCardXPBar:SetPoint("BOTTOM", PetJournalPetCard.backdrop, "BOTTOM", 0, 6)
+		PetJournalPetCardXPBar:SetFrameLevel(PetJournalPetCardXPBar:GetFrameLevel() + 2)
 
-	hooksecurefunc(PetJournalPetCardPetInfo.qualityBorder, "SetVertexColor", function(_, r, g, b)
-		PetJournalPetCardPetInfo.name:SetTextColor(r, g, b)
-	end)
+		hooksecurefunc(PetJournalPetCardPetInfo.qualityBorder, "SetVertexColor", function(_, r, g, b)
+			PetJournalPetCardPetInfo.name:SetTextColor(r, g, b)
+		end)
+	end
 
 	-- ToyBox
 	ToyBox.iconsFrame:StripTextures()
 	T.SkinEditBox(ToyBox.searchBox, nil, 18)
 	T.SkinNextPrevButton(ToyBox.PagingFrame.PrevPageButton)
 	T.SkinNextPrevButton(ToyBox.PagingFrame.NextPageButton)
-	ToyBox.progressBar:StripTextures()
-	ToyBox.progressBar:CreateBackdrop("Overlay")
-	ToyBox.progressBar:SetStatusBarTexture(C.media.texture)
-	ToyBox.progressBar:SetFrameLevel(ToyBox.progressBar:GetFrameLevel() + 2)
+	if ToyBox.progressBar then -- Not exist in WoW Forever (ProgressTracker instead)
+		ToyBox.progressBar:StripTextures()
+		ToyBox.progressBar:CreateBackdrop("Overlay")
+		ToyBox.progressBar:SetStatusBarTexture(C.media.texture)
+		ToyBox.progressBar:SetFrameLevel(ToyBox.progressBar:GetFrameLevel() + 2)
+	end
 
 	ToyBox.FilterDropdown:SetPoint("TOPLEFT", ToyBox.searchBox, "TOPRIGHT", 5, 2)
 

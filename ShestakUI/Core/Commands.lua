@@ -18,9 +18,11 @@ SLASH_TICKET1 = "/gm"
 SLASH_TICKET2 = "/гм"
 SLASH_TICKET3 = "/пь"
 
-SlashCmdList.JOURNAL = function() ToggleEncounterJournal() end
-SLASH_JOURNAL1 = "/ej"
-SLASH_JOURNAL2 = "/уо"
+if not T.Forever then -- No Encounter Journal in WoW Forever
+	SlashCmdList.JOURNAL = function() ToggleEncounterJournal() end
+	SLASH_JOURNAL1 = "/ej"
+	SLASH_JOURNAL2 = "/уо"
+end
 
 SlashCmdList.ROLECHECK = function() InitiateRolePoll() end
 SLASH_ROLECHECK1 = "/role"

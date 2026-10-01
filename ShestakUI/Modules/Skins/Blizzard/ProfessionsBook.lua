@@ -6,6 +6,8 @@ if C.skins.blizzard_frames ~= true then return end
 ----------------------------------------------------------------------------------------
 local function LoadSkin()
 	local frame = _G.ProfessionsBookFrame
+	if not frame then return end -- Not exist in WoW Forever (book is a page of ProfessionsFrame)
+
 	T.SkinFrame(frame)
 
 	ProfessionsBookFrameTutorialButton.Ring:Hide()

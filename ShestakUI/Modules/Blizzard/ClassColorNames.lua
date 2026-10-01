@@ -135,7 +135,9 @@ local function whoFrame(self)
 	end
 end
 
-hooksecurefunc(_G.WhoFrame.ScrollBox, "Update", whoFrame)
+if _G.WhoFrame then -- Not exist in WoW Forever
+	hooksecurefunc(_G.WhoFrame.ScrollBox, "Update", whoFrame)
+end
 
 -- PVPMatchResults
 hooksecurefunc(PVPCellNameMixin, "Populate", function(self, rowData)

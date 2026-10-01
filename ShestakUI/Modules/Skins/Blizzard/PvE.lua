@@ -5,6 +5,33 @@ if C.skins.blizzard_frames ~= true then return end
 --	PvE skin
 ----------------------------------------------------------------------------------------
 local function LoadSkin()
+	if not PVEFrame then -- Group Finder not exist in WoW Forever, skin only shared popups
+		LFGInvitePopupAcceptButton:SkinButton()
+		LFGInvitePopupDeclineButton:SkinButton()
+
+		local checkButtons = {
+			LFGInvitePopupRoleButtonTank,
+			LFGInvitePopupRoleButtonHealer,
+			LFGInvitePopupRoleButtonDPS,
+			RolePollPopupRoleButtonTank,
+			RolePollPopupRoleButtonHealer,
+			RolePollPopupRoleButtonDPS
+		}
+
+		for _, roleButton in pairs(checkButtons) do
+			T.SkinCheckBox(roleButton.checkButton or roleButton.CheckButton)
+		end
+
+		hooksecurefunc("SetCheckButtonIsRadio", function(button)
+			T.SkinCheckBox(button)
+		end)
+
+		LFGInvitePopup:StripTextures()
+		LFGInvitePopup:SetTemplate("Transparent")
+
+		return
+	end
+
 	local StripAllTextures = {
 		PVEFrame,
 		PVEFrameLeftInset,

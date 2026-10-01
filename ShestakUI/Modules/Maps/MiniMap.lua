@@ -283,7 +283,7 @@ local micromenu = {
 	{text = CHAT_CHANNELS, notCheckable = 1, func = function()
 		ToggleChannelFrame()
 	end},
-	{text = PLAYER_V_PLAYER, notCheckable = 1, func = function()
+	{text = PLAYER_V_PLAYER, notCheckable = 1, retail = true, func = function()
 		if T.level >= 10 then
 			TogglePVPUI()
 		else
@@ -296,7 +296,11 @@ local micromenu = {
 	end},
 	{text = GROUP_FINDER, notCheckable = 1, func = function()
 		if T.level >= 10 then
-			PVEFrame_ToggleFrame("GroupFinderFrame", nil)
+			if T.Forever then
+				ToggleGroupFinderFrame()
+			else
+				PVEFrame_ToggleFrame("GroupFinderFrame", nil)
+			end
 		else
 			if C.general.error_filter ~= "WHITELIST" then
 				UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10), 1, 0.1, 0.1)
@@ -305,7 +309,7 @@ local micromenu = {
 			end
 		end
 	end},
-	{text = journalText, notCheckable = 1, func = function()
+	{text = journalText, notCheckable = 1, retail = true, func = function()
 		if C_AdventureJournal.CanBeShown() then
 			ToggleEncounterJournal()
 		else
@@ -322,7 +326,7 @@ local micromenu = {
 		-- end
 		ToggleCollectionsJournal()
 	end},
-	{text = HOUSING_MICRO_BUTTON, notCheckable = 1, func = function()
+	{text = HOUSING_MICRO_BUTTON, notCheckable = 1, retail = true, func = function()
 		if Kiosk.IsEnabled() then
 			return
 		end
@@ -344,7 +348,18 @@ if not IsTrialAccount() and C_StorePublic.IsEnabled() then
 	tinsert(micromenu, {text = BLIZZARD_STORE, notCheckable = 1, func = function() StoreMicroButton:Click() end})
 end
 
-if T.level == GetMaxPlayerLevel() then
+-- PvP UI, Encounter Journal and Housing not exist in WoW Forever
+if T.Forever then
+	for i = #micromenu, 1, -1 do
+		if micromenu[i].retail then
+			tremove(micromenu, i)
+		end
+	end
+end
+
+if T.Forever then
+	-- No expansion landing page or weekly vault
+elseif T.level == GetMaxPlayerLevel() then
 	local name = C_Spell.GetSpellName(1302265)	-- Omnium Folio
 	tinsert(micromenu, {text = name, notCheckable = 1, func = function()
 		if ExpansionLandingPageMinimapButton then

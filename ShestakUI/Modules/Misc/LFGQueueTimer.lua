@@ -1,5 +1,6 @@
 ﻿local T, C, L = unpack(ShestakUI)
 if C_AddOns.IsAddOnLoaded("DBM-Core") or C_AddOns.IsAddOnLoaded("BigWigs") then return end
+if not LFGDungeonReadyDialog then return end -- Not exist in WoW Forever
 
 ----------------------------------------------------------------------------------------
 --	Queue timer on LFGDungeonReadyDialog

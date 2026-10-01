@@ -25,7 +25,9 @@ frame:SetScript("OnEvent", function()
 			CompactRaidFrameManager:HookScript("OnShow", HideFrames)
 			CompactRaidFrameContainer:HookScript("OnShow", HideFrames)
 			HideFrames()
-			CompactArenaFrame:HookScript("OnShow", function(self) if not InCombatLockdown() then self:Hide() end end)
+			if CompactArenaFrame then -- Not exist in WoW Forever
+				CompactArenaFrame:HookScript("OnShow", function(self) if not InCombatLockdown() then self:Hide() end end)
+			end
 			UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE") -- Hide/Show party member frames with UpdateRaidAndPartyFrames()
 			frame:UnregisterAllEvents()
 		end

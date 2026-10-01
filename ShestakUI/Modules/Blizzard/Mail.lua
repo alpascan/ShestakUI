@@ -106,7 +106,8 @@ local function makeButton(id, text, w, h, x, y)
 	return button
 end
 
-button = makeButton("OpenAllButton", ALL, 70, 25, -65, -398)
+local shift = InboxFrame.PrevPageButton and 23 or 0 -- InboxFrame is 46px narrower in WoW Forever
+button = makeButton("OpenAllButton", ALL, 70, 25, -65 + shift, -398)
 button:SetScript("OnClick", openAll)
 button:SetScript("OnEvent", onEvent)
 button:SetScript("OnEnter", function()
@@ -116,7 +117,7 @@ button:SetScript("OnEnter", function()
 end)
 button:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-button2 = makeButton("OpenAllButton2", MONEY, 70, 25, 18, -398)
+button2 = makeButton("OpenAllButton2", MONEY, 70, 25, 18 + shift, -398)
 button2:SetScript("OnClick", openAllCash)
 button2:SetScript("OnEnter", function()
 	if not total_cash then
@@ -138,3 +139,6 @@ if C.skins.blizzard_frames == true then
 end
 
 OpenAllMail:Hide() -- 7.2 new button
+if InboxFrame.UninitializeGamepad then -- WoW Forever show it again when gamepad mode is turned off
+	OpenAllMail:HookScript("OnShow", OpenAllMail.Hide)
+end

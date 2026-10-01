@@ -8,8 +8,10 @@ local function LoadSkin()
 	local frame = PlayerSpellsFrame
 	T.SkinFrame(frame)
 
-	PlayerSpellsFrame.TalentsFrame.BlackBG:SetAlpha(0)
-	PlayerSpellsFrame.TalentsFrame.BottomBar:SetAlpha(0)
+	if PlayerSpellsFrame.TalentsFrame.BlackBG then -- Not exist in WoW Forever
+		PlayerSpellsFrame.TalentsFrame.BlackBG:SetAlpha(0)
+		PlayerSpellsFrame.TalentsFrame.BottomBar:SetAlpha(0)
+	end
 
 	PlayerSpellsFrame.TalentsFrame.ApplyButton:SkinButton(true)
 
@@ -101,83 +103,87 @@ local function LoadSkin()
 
 	-- PvP
 	local pvpTalent = PlayerSpellsFrame.TalentsFrame.PvPTalentList
-	pvpTalent:StripTextures()
-	pvpTalent:CreateBackdrop("Overlay")
-	pvpTalent.backdrop:SetPoint("TOPLEFT", -5, 1)
-	pvpTalent.backdrop:SetPoint("BOTTOMRIGHT", -3, 0)
-	pvpTalent.backdrop:SetFrameStrata(pvpTalent:GetFrameStrata())
-	pvpTalent.backdrop:SetFrameLevel(2000)
+	if pvpTalent then -- Not exist in WoW Forever
+		pvpTalent:StripTextures()
+		pvpTalent:CreateBackdrop("Overlay")
+		pvpTalent.backdrop:SetPoint("TOPLEFT", -5, 1)
+		pvpTalent.backdrop:SetPoint("BOTTOMRIGHT", -3, 0)
+		pvpTalent.backdrop:SetFrameStrata(pvpTalent:GetFrameStrata())
+		pvpTalent.backdrop:SetFrameLevel(2000)
 
-	hooksecurefunc(pvpTalent.ScrollBox, "Update", function(frame)
-		for _, button in next, {frame.ScrollTarget:GetChildren()} do
-			if not button.isSkinned then
-				button.Selected:SetTexture(nil)
-				button.SelectedOtherCheck:SetTexture(nil)
-				button.Border:SetAlpha(0)
+		hooksecurefunc(pvpTalent.ScrollBox, "Update", function(frame)
+			for _, button in next, {frame.ScrollTarget:GetChildren()} do
+				if not button.isSkinned then
+					button.Selected:SetTexture(nil)
+					button.SelectedOtherCheck:SetTexture(nil)
+					button.Border:SetAlpha(0)
 
-				button.Icon:SkinIcon()
-				button.Icon:SetSize(30, 30)
-				button.Icon:ClearAllPoints()
-				button.Icon:SetPoint("LEFT", button, "LEFT", 4, 0)
+					button.Icon:SkinIcon()
+					button.Icon:SetSize(30, 30)
+					button.Icon:ClearAllPoints()
+					button.Icon:SetPoint("LEFT", button, "LEFT", 4, 0)
 
-				button.isSkinned = true
+					button.isSkinned = true
+				end
 			end
-		end
-	end)
+		end)
+	end
 
 	-- Spec tab
-	PlayerSpellsFrame.SpecFrame:CreateBackdrop("Overlay")
-	PlayerSpellsFrame.SpecFrame.backdrop:SetPoint("TOPLEFT", 2, -3)
-	PlayerSpellsFrame.SpecFrame.backdrop:SetPoint("BOTTOMRIGHT", -2, 1)
-	PlayerSpellsFrame.SpecFrame.backdrop.overlay:SetVertexColor(0.13, 0.13, 0.13, 1)
-	PlayerSpellsFrame.SpecFrame.Background:SetAlpha(0)
-	PlayerSpellsFrame.SpecFrame.BlackBG:SetAlpha(0)
+	if PlayerSpellsFrame.SpecFrame.UpdateSpecFrame then -- Stub frame in WoW Forever
+		PlayerSpellsFrame.SpecFrame:CreateBackdrop("Overlay")
+		PlayerSpellsFrame.SpecFrame.backdrop:SetPoint("TOPLEFT", 2, -3)
+		PlayerSpellsFrame.SpecFrame.backdrop:SetPoint("BOTTOMRIGHT", -2, 1)
+		PlayerSpellsFrame.SpecFrame.backdrop.overlay:SetVertexColor(0.13, 0.13, 0.13, 1)
+		PlayerSpellsFrame.SpecFrame.Background:SetAlpha(0)
+		PlayerSpellsFrame.SpecFrame.BlackBG:SetAlpha(0)
 
-	hooksecurefunc(PlayerSpellsFrame.SpecFrame, "UpdateSpecFrame", function(frame)
-		for specContentFrame in frame.SpecContentFramePool:EnumerateActive() do
-			if not specContentFrame.isSkinned then
-				specContentFrame.SpecImage.b = CreateFrame("Frame", nil, specContentFrame)
-				specContentFrame.SpecImage.b:SetFrameLevel(specContentFrame:GetFrameLevel() - 1)
-				specContentFrame.SpecImage.b:SetTemplate("Default")
-				specContentFrame.SpecImage.b:SetOutside(specContentFrame.SpecImage)
+		hooksecurefunc(PlayerSpellsFrame.SpecFrame, "UpdateSpecFrame", function(frame)
+			for specContentFrame in frame.SpecContentFramePool:EnumerateActive() do
+				if not specContentFrame.isSkinned then
+					specContentFrame.SpecImage.b = CreateFrame("Frame", nil, specContentFrame)
+					specContentFrame.SpecImage.b:SetFrameLevel(specContentFrame:GetFrameLevel() - 1)
+					specContentFrame.SpecImage.b:SetTemplate("Default")
+					specContentFrame.SpecImage.b:SetOutside(specContentFrame.SpecImage)
 
-				specContentFrame.SpecImageBorderOn:SetAlpha(0)
-				specContentFrame.SpecImageBorderOff:SetAlpha(0)
-				specContentFrame.HoverSpecImageBorder:SetAlpha(0)
+					specContentFrame.SpecImageBorderOn:SetAlpha(0)
+					specContentFrame.SpecImageBorderOff:SetAlpha(0)
+					specContentFrame.HoverSpecImageBorder:SetAlpha(0)
 
-				specContentFrame.ActivateButton:SkinButton()
+					specContentFrame.ActivateButton:SkinButton()
 
-				if specContentFrame.SpellButtonPool then
-					for button in specContentFrame.SpellButtonPool:EnumerateActive() do
-						if button.Ring then
-							button.Ring:Hide()
-						end
-
-						if button.CircleMask then
-							button.CircleMask:Hide()
-						end
-
-						if button.spellID then
-							local texture = C_Spell.GetSpellTexture(button.spellID)
-							if texture then
-								button.Icon:SetTexture(texture)
+					if specContentFrame.SpellButtonPool then
+						for button in specContentFrame.SpellButtonPool:EnumerateActive() do
+							if button.Ring then
+								button.Ring:Hide()
 							end
-						end
 
-						button.Icon:SkinIcon()
+							if button.CircleMask then
+								button.CircleMask:Hide()
+							end
+
+							if button.spellID then
+								local texture = C_Spell.GetSpellTexture(button.spellID)
+								if texture then
+									button.Icon:SetTexture(texture)
+								end
+							end
+
+							button.Icon:SkinIcon()
+						end
 					end
+
+					specContentFrame.isSkinned = true
 				end
 
-				specContentFrame.isSkinned = true
+				if specContentFrame.SpecImageBorderOn:IsShown() then
+					specContentFrame.SpecImage.b:SetBackdropBorderColor(1, 1, 0)
+				else
+					specContentFrame.SpecImage.b:SetBackdropBorderColor(unpack(C.media.border_color))
+				end
 			end
-
-			if specContentFrame.SpecImageBorderOn:IsShown() then
-				specContentFrame.SpecImage.b:SetBackdropBorderColor(1, 1, 0)
-			else
-				specContentFrame.SpecImage.b:SetBackdropBorderColor(unpack(C.media.border_color))
-			end
-		end
-	end)
+		end)
+	end
 
 	-- SpellBook
 	local page = PlayerSpellsFrame.SpellBookFrame

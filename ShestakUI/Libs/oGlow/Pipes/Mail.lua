@@ -69,8 +69,13 @@ local enable = function(self)
 	self:RegisterEvent("MAIL_SEND_SUCCESS", send)
 
 	if not hook then
-		hooksecurefunc("OpenMail_Update", hookLetter)
-		hooksecurefunc("InboxFrame_Update", hookInbox)
+		if OpenMail_Update then
+			hooksecurefunc("OpenMail_Update", hookLetter)
+			hooksecurefunc("InboxFrame_Update", hookInbox)
+		else -- Moved to frame methods in WoW Forever
+			hooksecurefunc(OpenMailFrame, "Update", hookLetter)
+			hooksecurefunc(InboxFrame, "Update", hookInbox)
+		end
 		hook = true
 	end
 end

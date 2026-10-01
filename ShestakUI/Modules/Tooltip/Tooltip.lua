@@ -100,7 +100,7 @@ frame:SetScript("OnEvent", function()
 end)
 
 -- RaiderIO skin
-if C_AddOns.IsAddOnLoaded("RaiderIO") then
+if C_AddOns.IsAddOnLoaded("RaiderIO") and PVEFrame then
 	PVEFrame:HookScript("OnShow", function()
 		if not RaiderIO_ProfileTooltip.styled then
 			RaiderIO_ProfileTooltip.NineSlice:SetAlpha(0)
